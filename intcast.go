@@ -3,6 +3,7 @@ package intcast
 import (
 	"go/ast"
 	"go/types"
+	"strings"
 
 	"github.com/gostaticanalysis/comment"
 	"github.com/gostaticanalysis/comment/passes/commentmap"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-const doc = "intcast finds integer type cast that can cause overflow"
+const doc = "intcast identifies integer type casts that can potentially cause overflow"
 
 var Analyzer = &analysis.Analyzer{
 	Name: "intcast",
@@ -44,7 +45,7 @@ func run(pass *analysis.Pass) (any, error) {
 							if isProblematicIntegerCast(srcBasicType, dstBasicType) {
 								line := pass.Fset.Position(f.Pos()).Line
 								if !cmaps.IgnoreLine(pass.Fset, line, "intcast") {
-									pass.Reportf(f.Pos(), "problematic integer type cast from %s to %s", argType, f)
+									pass.Reportf(f.Pos(), "unsafe cast: converting %s to %s could lead to integer overflow.", trimPackage(argType.String()), trimPackage(f.String()))
 								}
 							}
 						}
@@ -62,7 +63,8 @@ func run(pass *analysis.Pass) (any, error) {
 								if isProblematicIntegerCast(srcBasicType, dstBasicType) {
 									line := pass.Fset.Position(f.Pos()).Line
 									if !cmaps.IgnoreLine(pass.Fset, line, "intcast") {
-										pass.Reportf(f.Pos(), "problematic integer type cast from %s to %s.%s", argType, f.X, f.Sel)
+										dstType := pass.TypesInfo.TypeOf(f)
+										pass.Reportf(f.Pos(), "unsafe cast: converting %s to %s could lead to integer overflow.", trimPackage(argType.String()), trimPackage(dstType.String()))
 									}
 								}
 							}
@@ -174,4 +176,12 @@ var problematicCast [][2]types.BasicKind = [][2]types.BasicKind{
 	{types.Uint64, types.Uint8},
 	// uint8
 	{types.Uint8, types.Int8},
+}
+
+func trimPackage(pkg string) string {
+	if pkg == "" {
+		return ""
+	}
+	parts := strings.Split(pkg, "/")
+	return parts[len(parts)-1]
 }
