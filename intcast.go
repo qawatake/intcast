@@ -60,12 +60,10 @@ func run(pass *analysis.Pass) (any, error) {
 							srcBasicType := argType.Underlying().(*types.Basic)
 							dstBasicType := pass.TypesInfo.TypeOf(f).Underlying().(*types.Basic)
 							if isProblematicIntegerCast(srcBasicType, dstBasicType) {
-								if isProblematicIntegerCast(srcBasicType, dstBasicType) {
-									line := pass.Fset.Position(f.Pos()).Line
-									if !cmaps.IgnoreLine(pass.Fset, line, "intcast") {
-										dstType := pass.TypesInfo.TypeOf(f)
-										pass.Reportf(f.Pos(), "unsafe cast: converting %s to %s could lead to integer overflow.", trimPackage(argType.String()), trimPackage(dstType.String()))
-									}
+								line := pass.Fset.Position(f.Pos()).Line
+								if !cmaps.IgnoreLine(pass.Fset, line, "intcast") {
+									dstType := pass.TypesInfo.TypeOf(f)
+									pass.Reportf(f.Pos(), "unsafe cast: converting %s to %s could lead to integer overflow.", trimPackage(argType.String()), trimPackage(dstType.String()))
 								}
 							}
 						}
