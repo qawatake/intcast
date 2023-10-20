@@ -120,7 +120,6 @@ func castUint16() {
 
 func castUint32() {
 	var i uint32
-	_ = int(i)         // want "unsafe cast"
 	_ = int16(i)       // want "unsafe cast"
 	_ = int32(i)       // want "unsafe cast"
 	_ = int8(i)        // want "unsafe cast"
@@ -168,7 +167,6 @@ func castUint8() {
 
 func castUint32X() {
 	var i uint32x
-	_ = int(i)         // want "unsafe cast"
 	_ = int16(i)       // want "unsafe cast"
 	_ = int32(i)       // want "unsafe cast"
 	_ = int8(i)        // want "unsafe cast"

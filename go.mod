@@ -1,6 +1,6 @@
 module github.com/qawatake/intcast
 
-go 1.19
+go 1.21.3
 
 require (
 	github.com/gostaticanalysis/comment v1.4.2

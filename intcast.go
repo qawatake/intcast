@@ -3,6 +3,8 @@ package intcast
 import (
 	"go/ast"
 	"go/types"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/gostaticanalysis/comment"
@@ -94,19 +96,17 @@ func isIntegerArg(expr ast.Expr, pass *analysis.Pass) bool {
 }
 
 func isProblematicIntegerCast(src *types.Basic, dst *types.Basic) bool {
-	for _, cast := range problematicCast {
-		if src.Kind() == cast[0] && dst.Kind() == cast[1] {
+	for _, cast := range problematicCasts {
+		if src.Kind() == cast.from && dst.Kind() == cast.to {
 			return true
 		}
 	}
 	return false
 }
 
-// [0] is source type, [1] is destination type
-var problematicCast [][2]types.BasicKind = [][2]types.BasicKind{
+var problematicCasts []cast = []cast{
 	// int
 	{types.Int, types.Int16},
-	{types.Int, types.Int32},
 	{types.Int, types.Int8},
 	{types.Int, types.Uint},
 	{types.Int, types.Uint16},
@@ -157,7 +157,6 @@ var problematicCast [][2]types.BasicKind = [][2]types.BasicKind{
 	{types.Uint16, types.Int8},
 	{types.Uint16, types.Uint8},
 	// uint32
-	{types.Uint32, types.Int},
 	{types.Uint32, types.Int16},
 	{types.Uint32, types.Int32},
 	{types.Uint32, types.Int8},
@@ -174,6 +173,28 @@ var problematicCast [][2]types.BasicKind = [][2]types.BasicKind{
 	{types.Uint64, types.Uint8},
 	// uint8
 	{types.Uint8, types.Int8},
+}
+
+type cast struct {
+	from types.BasicKind
+	to   types.BasicKind
+}
+
+func init() {
+	if strconv.IntSize == 64 {
+		problematicCasts = slices.Grow(problematicCasts, 1)
+		problematicCasts = append(problematicCasts,
+			cast{types.Int, types.Int32},
+		)
+	}
+	if strconv.IntSize == 32 {
+		problematicCasts = slices.Grow(problematicCasts, 2)
+		problematicCasts = append(problematicCasts,
+			cast{types.Int64, types.Int},
+			cast{types.Uint32, types.Int},
+			cast{types.Uint32, types.Int},
+		)
+	}
 }
 
 func trimPackage(pkg string) string {
