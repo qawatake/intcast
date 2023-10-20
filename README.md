@@ -29,6 +29,6 @@ func f(i int) uint {
 ## How to use
 
 ```sh
-go install github.com/qawatake/intcast/cmd@latest
+go install github.com/qawatake/intcast/cmd/intcast@latest
 intcast ./...
 ```
