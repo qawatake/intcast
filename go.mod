@@ -1,11 +1,11 @@
 module github.com/qawatake/intcast
 
-go 1.21.3
+go 1.26.10
 
 require (
 	github.com/gostaticanalysis/comment v1.4.2
 	github.com/gostaticanalysis/testutil v0.4.0
-	golang.org/x/tools v0.11.0
+	golang.org/x/tools v0.26.0
 )
 
 require (
@@ -13,7 +13,7 @@ require (
 	github.com/otiai10/copy v1.2.0 // indirect
 	github.com/tenntenn/modver v1.0.1 // indirect
 	github.com/tenntenn/text/transform v0.0.0-20200319021203-7eef512accb3 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/mod v0.21.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
